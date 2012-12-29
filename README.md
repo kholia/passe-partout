@@ -8,7 +8,13 @@ More information may be found at the following URLs:
 * http://www.hsc.fr/ressources/breves/passe-partout.html.en
 * http://www.hsc.fr/ressources/breves/passe-partout.html.fr
 
-License : Beerware
+Tested to work with:
+* ssh-agent (from OpenSSH 6.1)
+* Apache httpd 2.2.23
+* Nginx 1.2.6
+
+
+License: Beerware
 
 Authors: Nicolas Collignon and Jean-Baptiste Aviat
 
