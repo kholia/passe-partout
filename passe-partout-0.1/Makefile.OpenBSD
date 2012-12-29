@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_OPENBSD -DDBG_PTRACE -g
+include ./Makefile.main

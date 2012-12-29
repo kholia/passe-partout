@@ -1,0 +1,16 @@
+CC=gcc
+BIN=passe-partout
+OBJS=dbg.o $(BIN).o
+LDFLAGS=-lcrypto
+
+all: $(LIB) $(BIN)
+
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $(OBJS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -Wall -g -o $@ -c $<
+
+clean: 
+	rm -f $(OBJS) $(BIN)
+

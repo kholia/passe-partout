@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_DARWIN -DDBG_PTRACE
+include ./Makefile.main

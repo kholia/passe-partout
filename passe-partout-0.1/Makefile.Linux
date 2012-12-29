@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_LINUX -DDBG_PTRACE
+include ./Makefile.main

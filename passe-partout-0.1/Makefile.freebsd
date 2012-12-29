@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_FREEBSD -DDBG_PTRACE
+include ./Makefile.main

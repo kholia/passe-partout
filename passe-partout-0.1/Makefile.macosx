@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_MACOSX -DDBG_PTRACE
+include ./Makefile.main

@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_NETBSD -DDBG_PTRACE
+include ./Makefile.main

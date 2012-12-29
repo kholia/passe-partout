@@ -1,0 +1,2 @@
+CFLAGS=-DDBG_HPUX -DDBG_TTRACE
+include ./Makefile.main
