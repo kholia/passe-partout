@@ -12,7 +12,7 @@ Tested to work with:
 * ssh-agent (from OpenSSH 6.1)
 * Apache httpd 2.2.23
 * Nginx 1.2.6
-
+* CherryPy 3.2.2 + Python 2.7.3 (load generation is required to catch live SSL_CTX objects)
 
 License: Beerware
 
