@@ -14,9 +14,12 @@ Tested to work with:
 * Nginx 1.2.6
 * Node.js v0.8.15
 * Thin web server (v1.5.0 codename Knife)
+* Tomcat 7.0.34 + apr 1.4.6 + jdk7-openjdk 7.u9
 * CherryPy 3.2.2 + Python 2.7.3 (load generation is required to catch live SSL_CTX objects)
 * Tornado 2.4.1 + Python 2.7.3 (load generation is required to catch live SSL_CTX objects)
 * Tornado 2.4.1 + Python 3.3.0 (load generation is required to catch live SSL_CTX objects)
+
+Test Platform: Arch Linux 64-bit, OpenSSL 1.0.1c
 
 License: Beerware
 
