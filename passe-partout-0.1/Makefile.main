@@ -6,7 +6,7 @@ LDFLAGS=-lcrypto
 all: $(LIB) $(BIN)
 
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -Wall -g -o $@ -c $<
