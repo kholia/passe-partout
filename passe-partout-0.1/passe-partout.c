@@ -19,6 +19,8 @@
 #include <openssl/dsa.h>
 #include <openssl/bn.h>
 #include <openssl/pem.h>
+#include <openssl/ec.h>
+#include <openssl/bn.h>
 
 #include "dbg.h"
 
@@ -87,6 +89,59 @@ static int might_be_DSA(DSA *dsa, proc_t *proc) {
         (dsa->r && is_valid_address( (unsigned long) dsa->r, proc));
 }
 
+/* from crypto/ec/ec_lcl.h
+struct ec_key_st {
+        int version;
+
+        EC_GROUP *group;
+
+        EC_POINT *pub_key;
+        BIGNUM   *priv_key;
+
+        unsigned int enc_flag;
+        point_conversion_form_t conv_form;
+
+        int     references;
+        int     flags;
+
+        EC_EXTRA_DATA *method_data;
+} //  EC_KEY */
+
+// hack
+typedef enum {
+        POINT_CONVERSION_COMPRESSED_ = 2,
+} point_conversion_form_t_;
+
+typedef struct ec_key_st_ {
+        int version;
+
+        void *group;
+
+        void *pub_key;
+        void *priv_key;
+
+        unsigned int enc_flag;
+        point_conversion_form_t_ conv_form;
+
+        int     references;
+        int     flags;
+
+        void *method_data;
+} EC_KEY_;
+
+/* returns 0 if all addresses seems to be valid
+          -1 else.
+*/
+static int might_be_ECDSA(EC_KEY_ *ecdsa, proc_t *proc) {
+    return
+        (ecdsa->version != 1) ||
+        (!(ecdsa->conv_form == 4 || ecdsa->conv_form == 4 || ecdsa->conv_form == 6)) || // crypto/ec/ec.h
+        (ecdsa->references < 0) || (ecdsa->references > 0xff)  ||
+        is_valid_address( (unsigned long) ecdsa->group, proc)    ||
+        is_valid_address( (unsigned long) ecdsa->pub_key, proc)  ||
+        is_valid_address( (unsigned long) ecdsa->priv_key, proc) ||
+        is_valid_address( (unsigned long) ecdsa->priv_key, proc);
+}
 
 static void *extract_from_mem(void *addr, unsigned int size, proc_t *proc) {
 	mapping_t *map;
@@ -226,6 +281,25 @@ int write_dsa_key(DSA * dsa, char *prefix) {
     return 0;
 }
 
+int write_ecdsa_key(EC_KEY_ * ecdsa, char *prefix) {
+
+    char *filename = get_valid_filename(prefix) ;
+
+    FILE *f = fopen(filename, "w");
+    if ( f == NULL ) {
+        perror("fopen");
+        return -1;
+    }
+    if ( ! PEM_write_ECPrivateKey(f, (EC_KEY*)ecdsa, NULL,
+            NULL, 0, NULL, NULL) ) {
+        fprintf(stderr, "Error saving key to file %s\n", filename);
+        return -1;
+    }
+    fclose(f);
+    printf("[X] Key saved to file %s\n", filename);
+    free(filename);
+    return 0;
+}
 
 /* key saving }}} */
 
@@ -425,6 +499,21 @@ void free_dsa_key(DSA *dsa) {
     free(dsa->priv_key);
 }
 
+int extract_ecdsa_key( EC_KEY_ * ecdsa, proc_t *p ) {
+	int error;
+
+	ecdsa->priv_key = BN_extract_from_mem(ecdsa->priv_key, p, &error);
+	if ( error ) goto err;
+	char *out = BN_bn2dec(ecdsa->priv_key);
+	fprintf(stderr, "[X] Valid ECDSA key found.\n");
+	printf("ecdsa->priv_key == %s, use reconstruct-ecdsa.py script to reconstruct key!\n", out);
+
+	return 0;
+
+err:
+	return -1;
+}
+
 /* }}} */
 
 static void find_keys(mapping_t *map, unsigned int off, unsigned int end)
@@ -434,6 +523,7 @@ static void find_keys(mapping_t *map, unsigned int off, unsigned int end)
 	unsigned int j;
 	RSA rsa;
 	DSA dsa;
+	EC_KEY_ ecdsa;
 
 	p = map->proc;
   	data = map->data;
@@ -477,6 +567,20 @@ static void find_keys(mapping_t *map, unsigned int off, unsigned int end)
 				}
 			}
 		}
+
+		if ( j <= map->size - sizeof(EC_KEY_) ) {   // these structures can change, modify according to your openssl version!
+			memcpy(&ecdsa, data + j, sizeof(EC_KEY_));
+			if ( might_be_ECDSA(&ecdsa, p) == 0 ) {
+				printf("Hit for %lx, version %d, conv_form %d!\n", map->address+j, ecdsa.version, ecdsa.conv_form);
+				if ( ! extract_ecdsa_key(&ecdsa, p) ) {
+					printf("found ECDSA key @ 0x%lx\n", map->address+j);
+					// write_ecdsa_key(&ecdsa, "id_ecdsa");
+					// free_ecdsa_key(&ecdsa);
+					continue ;
+				}
+			}
+		}
+
 	}
 }
 
