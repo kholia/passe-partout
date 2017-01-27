@@ -1,2 +1,17 @@
-CFLAGS=-DDBG_DARWIN -DDBG_PTRACE
-include ./Makefile.main
+CFLAGS=-DDBG_DARWIN -DDBG_PTRACE -I/usr/local/opt/openssl/include
+LDFLAGS=-L/usr/local/opt/openssl/lib -lcrypto
+
+CC=gcc
+BIN=passe-partout
+OBJS=dbg.o $(BIN).o
+
+all: $(LIB) $(BIN)
+
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -Wall -g -o $@ -c $<
+
+clean:
+	rm -f $(OBJS) $(BIN)
