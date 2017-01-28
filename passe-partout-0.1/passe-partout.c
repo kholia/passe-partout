@@ -508,6 +508,18 @@ int extract_ecdsa_key( EC_KEY_ * ecdsa, proc_t *p ) {
 	fprintf(stderr, "[X] Valid ECDSA key found.\n");
 	printf("ecdsa->priv_key == %s, use reconstruct-ecdsa.py script to reconstruct key!\n", out);
 
+	int grp = OBJ_txt2nid("prime256v1");
+	EC_KEY *key = EC_KEY_new_by_curve_name(grp);
+	EC_KEY_set_private_key(key, ecdsa->priv_key);
+	const EC_GROUP *group = EC_KEY_get0_group(key);
+	BN_CTX *ctx = BN_CTX_new();
+	BN_CTX_start(ctx);
+	EC_POINT *pub = EC_POINT_new(group);
+	EC_POINT_mul(group, pub, ecdsa->priv_key, NULL, NULL, ctx);
+	EC_KEY_set_public_key(key, pub);
+	// int ret = EC_KEY_check_key(key);
+	write_ecdsa_key((EC_KEY_ *)key, "currently-broken");
+
 	return 0;
 
 err:
@@ -559,7 +571,7 @@ static void find_keys(mapping_t *map, unsigned int off, unsigned int end)
 			if ( might_be_DSA(&dsa, p) == 0 ) {
 			//printf("==B==\n");
 
-				if ( ! extract_dsa_key(&dsa, p) > 0 ) {
+				if ( (! extract_dsa_key(&dsa, p)) > 0 ) {
 					printf("found DSA key @ 0x%lx\n", map->address+j);
 					write_dsa_key(&dsa, "id_dsa");
 					free_dsa_key(&dsa);
@@ -574,8 +586,6 @@ static void find_keys(mapping_t *map, unsigned int off, unsigned int end)
 				printf("Hit for %lx, version %d, conv_form %d!\n", map->address+j, ecdsa.version, ecdsa.conv_form);
 				if ( ! extract_ecdsa_key(&ecdsa, p) ) {
 					printf("found ECDSA key @ 0x%lx\n", map->address+j);
-					// write_ecdsa_key(&ecdsa, "id_ecdsa");
-					// free_ecdsa_key(&ecdsa);
 					continue ;
 				}
 			}
