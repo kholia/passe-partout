@@ -3,7 +3,7 @@
 require 'openssl'
 require 'socket'
 
-if ARGV.size != 1 
+if ARGV.size != 1
   $stderr.puts "Usage : #{__FILE__} server_cert|server_url"
   exit 1
 end

@@ -59,7 +59,7 @@ static int is_valid_address(unsigned long addr, proc_t *proc) {
           -1 else.
 */
 static int might_be_RSA(RSA *rsa, proc_t *proc) {
-    return 
+    return
 	rsa->pad || rsa->version ||
 	(rsa->references < 0) || (rsa->references > 0xff)  ||
         is_valid_address( (unsigned long) rsa->n, proc)    ||
@@ -155,7 +155,7 @@ static void *extract_from_mem(void *addr, unsigned int size, proc_t *proc) {
 }
 
 static int is_valid_BN(BIGNUM *bn) {
-    
+
     printf("BN { d=%p, top=%i, dmax=%i, neg=%i, flags=%i }\n",
 		bn->d, bn->top, bn->dmax, bn->neg, bn->flags);
 	  if ( bn->dmax < 0 || bn->top < 0 || bn->dmax < bn->top )
@@ -169,11 +169,11 @@ static int is_valid_BN(BIGNUM *bn) {
 /*
    struct bignum_st
    {
-   BN_ULONG *d;     Pointer to an array of 'BN_BITS2' bit chunks. 
-   int top;     Index of last used d +1. 
-   The next are internal book keeping for bn_expand. 
-   int dmax;    Size of the d array. 
-   int neg;     one if the number is negative 
+   BN_ULONG *d;     Pointer to an array of 'BN_BITS2' bit chunks.
+   int top;     Index of last used d +1.
+   The next are internal book keeping for bn_expand.
+   int dmax;    Size of the d array.
+   int neg;     one if the number is negative
    int flags;
    };
 
@@ -198,7 +198,7 @@ BIGNUM * BN_extract_from_mem(void * bn_addr, proc_t * proc, int * error) {
 	}
 	memcpy(bn, bn_tmp, sizeof(BIGNUM));
 	/* tests heuristiques */
-	if ( is_valid_BN(bn) == -1 ) { 
+	if ( is_valid_BN(bn) == -1 ) {
 			*error = 1;
 			free(bn);
 			return NULL;
@@ -232,18 +232,18 @@ char * get_valid_filename(char *string) {
     while ( file_exists(filename) && i < MAX_KEYS ) {
         i++;
         sprintf(filename, "%s-%d.key", string, i);
-    } 
+    }
     if ( i >= MAX_KEYS )
         return NULL ;
-    
-    
+
+
     return strdup(filename);
 }
 
 int write_rsa_key(RSA * rsa, char *prefix) {
 
     char *filename = get_valid_filename(prefix) ;
-    
+
     FILE *f = fopen(filename, "w");
     if ( f == NULL ) {
         perror("fopen");
@@ -264,7 +264,7 @@ int write_rsa_key(RSA * rsa, char *prefix) {
 int write_dsa_key(DSA * dsa, char *prefix) {
 
     char *filename = get_valid_filename(prefix) ;
-    
+
     FILE *f = fopen(filename, "w");
     if ( f == NULL ) {
         perror("fopen");
@@ -311,7 +311,7 @@ int extract_rsa_key(RSA *rsa, proc_t *p) {
 
 		if ( verbose > 1 ) {
 				printf("RSA { pad=%i, ver=%li, ref=%i, flags=%i, engine=%p\n"
-								"      n=%p, e=%p, d=%p, p=%p, q=%p\n"    
+								"      n=%p, e=%p, d=%p, p=%p, q=%p\n"
 								"      dmp1=%p, dmq1=%p, iqmp=%p, bn_data=%p\n"
 								"      blinding=%p, mont_bn=%p/%p/%p }\n",
 								rsa->pad, rsa->version, rsa->references, rsa->flags, rsa->engine,
@@ -407,7 +407,7 @@ int extract_dsa_key( DSA * dsa, proc_t *p ) {
 
 	if ( verbose > 1 ) {
 			printf("DSA { pad=%i, ver=%li, ref=%i, flags=%i, engine=%p\n"
-							"      p=%p, q=%p, g=%p, pubkey=%p, pvkey=%p\n"    
+							"      p=%p, q=%p, g=%p, pubkey=%p, pvkey=%p\n"
 							"      kinv=%p, r=%p, mont_p=%p, meth=%p }\n",
 							dsa->pad, dsa->version, dsa->references, dsa->flags, dsa->engine,
 							dsa->p, dsa->q, dsa->g, dsa->pub_key, dsa->priv_key, dsa->kinv,
@@ -475,7 +475,7 @@ free_res:
 	BN_free(res);
 	if ( dsa->r    != NULL ) { free(dsa->r); }
 	if ( dsa->kinv != NULL ) { free(dsa->kinv); }
-	free(dsa->g); 
+	free(dsa->g);
 free_q:
 	free(dsa->q);
 free_p:
@@ -492,7 +492,7 @@ free_priv_key:
 void free_dsa_key(DSA *dsa) {
     if ( dsa->r    != NULL ) { free(dsa->r); }
     if ( dsa->kinv != NULL ) { free(dsa->kinv); }
-    free(dsa->g); 
+    free(dsa->g);
     free(dsa->q);
     free(dsa->p);
     free(dsa->pub_key);
@@ -541,7 +541,7 @@ static void find_keys(mapping_t *map, unsigned int off, unsigned int end)
 		if ( j <= map->size - sizeof(RSA) ) {
 			memcpy(&rsa, data + j, sizeof(RSA));
 
-			if ( might_be_RSA(&rsa, p) == 0 ) { 
+			if ( might_be_RSA(&rsa, p) == 0 ) {
 
 				if ( ! extract_rsa_key(&rsa, p) ) {
 					printf("found RSA key @ 0x%lx\n", map->address+j);
@@ -630,7 +630,7 @@ int main(int argc, char **argv) {
 				if ((from|to) & (sizeof(char *)-1)) {
 					fprintf(stderr, "error: unaligned map range\n");
 					return EXIT_FAILURE;
-				}	
+				}
 				break;
 			default:
 				usage(argv[0]);

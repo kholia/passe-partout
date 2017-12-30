@@ -1,6 +1,8 @@
 Passe partout v0.1
 ==================
 
+NOTE: This project requires OpenSSL 1.0.x to build. Building against OpenSSL 1.1.x does not work.
+
 passe-partout is a tool to extract SSL private keys from process memory written by Nicolas Collignon and Jean-Baptiste Aviat (passe-partout@hsc.fr).
 
 More information may be found at the following URLs:
@@ -26,5 +28,3 @@ Test Platform (if not specified): Arch Linux 64-bit, OpenSSL 1.0.1c
 License: Beerware
 
 Authors: Nicolas Collignon and Jean-Baptiste Aviat
-
-

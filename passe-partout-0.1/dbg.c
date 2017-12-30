@@ -74,7 +74,7 @@ static mapping_t *parse_line(char *str)
 	end = strchr(str, '\n');
 	if (end)
 		*end = 0;
-	
+
 	/* parse mapping name */
 	file = strrchr(str, ' ');
 	if (!file) {
@@ -145,7 +145,7 @@ static mapping_t *parse_line(char *str)
 
 	if (dbg_verbose > 2)
 		fprintf(stdout, ">\t%24s 0x%lx 0x%x\n", file, map->address, map->size);
-	
+
 	return map;
 }
 #elif defined(DBG_SOLARIS)
@@ -408,7 +408,7 @@ mapping_t *dbg_map_lookup(proc_t *p, int flags, const char *name)
 
 	if (ret > 0)
 		free(maps);
-	
+
 	return map;
 }
 
@@ -505,12 +505,12 @@ static void killme(int sig, siginfo_t *si, void *bla)
 		if (dbg_verbose)
 			fprintf(stderr, "dbg: attached to process %u\n", si->si_pid);
 		return;
-	}  
+	}
 	dbg_detach(ptraced_proc);
 	ptraced_proc = NULL;
 	fprintf(stderr, "killed\n");
 	exit(0);
-}  
+}
 
 
 
@@ -522,10 +522,10 @@ int dbg_init(proc_t *p, pid_t pid)
 
 	if (ptraced_proc)
 		return DBGERR_NOT_IMPLEMENTED; /* TODO */
-	
+
 	if (!pid || (pid == getpid()) || (pid == getppid()))
 		return DBGERR_BAD_PID;
-	
+
 	memset(p, 0, sizeof(*p));
 	p->pid  = pid;
 	snprintf(p->pid_str, 8, "%u", pid);
@@ -575,7 +575,7 @@ int dbg_attach(proc_t *p, int mode)
 {
 #ifdef DBG_DARWIN
 		// no ptrace needed to dump memory
-#elif defined(DBG_SOLARIS) 
+#elif defined(DBG_SOLARIS)
 	char path[64];
 
 	snprintf(path, sizeof(path)-1, "/proc/%s/as", p->pid_str);
@@ -586,7 +586,7 @@ int dbg_attach(proc_t *p, int mode)
 	}
 #else
 	int status;
-	
+
 	if (p->flags & DBGPROC_TRACED)
 		return DBGERR_ALREADY_ATTACHED;
 
@@ -757,7 +757,7 @@ int dbg_read(proc_t *p, xaddr_t addr, void *buf, unsigned int size)
 		ret = read(p->mem_fd, buf, size);
 		if (ret < 0)
 				return -1;
-		return size != (unsigned int) ret; 
+		return size != (unsigned int) ret;
 
 #elif defined(DBG_WIN)
 		DWORD len;
